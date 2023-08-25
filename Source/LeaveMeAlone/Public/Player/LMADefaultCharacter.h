@@ -11,6 +11,8 @@ class USpringArmComponent;
 class UInputComponent;
 class UDecalComponent;
 class UMaterialInterface;
+class ULMAHealthComponent;
+class UAnimMontage;
 
 UCLASS()
 class LEAVEMEALONE_API ALMADefaultCharacter : public ACharacter
@@ -18,24 +20,20 @@ class LEAVEMEALONE_API ALMADefaultCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ALMADefaultCharacter();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UFUNCTION()
+	ULMAHealthComponent* GetHealthComponent() { return HealthComponent; }
 
+protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USpringArmComponent* SpringArmComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UCameraComponent* CameraComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	float MaxArmLength = 3000.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	float MinArmLength = 500.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Health")
+	ULMAHealthComponent* HealthComponent;
 
 	UPROPERTY()
 	UDecalComponent* CurrentCursor = nullptr;
@@ -46,11 +44,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
 	FVector CursorSize = FVector(20.0f, 40.0f, 40.0f);
 
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* DeathMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	float MaxArmLength = 3000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	float MinArmLength = 500.0f;
+
+	virtual void BeginPlay() override;
+
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
@@ -61,4 +68,9 @@ private:
 	void MoveForward(float);
 	void MoveRight(float);
 	void ChangeCameraArmLength(float);
+
+	void OnDeath();
+	void OnHealthChanged(float);
+
+	void RotationPlayerOnCursor();
 };
