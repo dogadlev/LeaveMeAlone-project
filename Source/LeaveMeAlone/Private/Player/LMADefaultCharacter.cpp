@@ -10,7 +10,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/Engine.h"
 #include "Materials/MaterialInterface.h"
-#include "Components/LMAHealthComponent.h"
+#include "Components/LMAHealthPoints.h"
+#include "Math/Quat.h"
+#include "Math/Color.h"
+#include "Math/Rotator.h"
+#include "Math/UnrealMathUtility.h"
+#include "Containers/UnrealString.h"
 
 ALMADefaultCharacter::ALMADefaultCharacter()
 {
@@ -29,7 +34,13 @@ ALMADefaultCharacter::ALMADefaultCharacter()
 	CameraComponent->SetFieldOfView(FOV);
 	CameraComponent->bUsePawnControlRotation = false;
 
-	HealthComponent = CreateDefaultSubobject<ULMAHealthComponent>("HealthComponent");
+	HealthComponent = CreateDefaultSubobject<ULMAHealthPoints>("HealthComponent");
+
+	IsSprinting = false;
+	CurrentStamina = 1.0f;
+	MaxStamina = 1.0f;
+	StaminaDecreaseRate = 0.05f;
+	StaminaIncreaseRate = 0.1f;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -43,17 +54,35 @@ void ALMADefaultCharacter::BeginPlay()
 	{
 		CurrentCursor = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), CursorMaterial, CursorSize, FVector(0));
 	}
+	
 	OnHealthChanged(HealthComponent->GetHealth());
 	HealthComponent->OnDeath.AddUObject(this, &ALMADefaultCharacter::OnDeath);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ALMADefaultCharacter::OnHealthChanged);
+	
 }
 
 void ALMADefaultCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (HealthComponent->IsAlive())
+	
+	if (ALMADefaultCharacter::HealthComponent->IsAlive())
 	{
 		RotationPlayerOnCursor();
+	}
+	if (IsSprinting)
+	{
+		if (FMath::IsNearlyEqual(CurrentStamina, 0.0f))
+		{
+			StopSprint();
+		}
+		CurrentStamina = FMath::FInterpConstantTo(CurrentStamina, 0.0f, DeltaTime, StaminaDecreaseRate);
+	}
+	else
+	{
+		if (CurrentStamina < MaxStamina)
+		{
+			CurrentStamina = FMath::FInterpConstantTo(CurrentStamina, MaxStamina, DeltaTime, StaminaIncreaseRate);
+		}
 	}
 }
 
@@ -64,6 +93,9 @@ void ALMADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("MoveForward", this, &ALMADefaultCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ALMADefaultCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("ChangeCameraArmLength", this, &ALMADefaultCharacter::ChangeCameraArmLength);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMADefaultCharacter::StartSprint);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ALMADefaultCharacter::StopSprint);
 }
 
 void ALMADefaultCharacter::MoveForward(float value)
@@ -120,5 +152,24 @@ void ALMADefaultCharacter::RotationPlayerOnCursor()
 		{
 			CurrentCursor->SetWorldLocation(ResultHit.Location);
 		}
+	}
+}
+
+void ALMADefaultCharacter::StopSprint()
+{
+	IsSprinting = false;
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
+}
+
+void ALMADefaultCharacter::StartSprint() 
+{
+	if (CurrentStamina > 0.3f)
+	{
+		IsSprinting = true;
+		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+	}
+	else
+	{
+		StopSprint();
 	}
 }

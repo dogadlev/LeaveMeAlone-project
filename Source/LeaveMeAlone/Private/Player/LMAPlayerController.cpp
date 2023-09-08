@@ -1,6 +1,8 @@
 // LeaveMeAlone Game by Netologiya. All Rights Reserved.
 
 #include "Player/LMAPlayerController.h"
+#include "GameFramework/PlayerController.h"
+#include "Math/Rotator.h"
 
 ALMAPlayerController::ALMAPlayerController() {}
 

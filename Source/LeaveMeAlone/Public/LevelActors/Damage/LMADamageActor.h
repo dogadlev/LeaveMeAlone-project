@@ -16,7 +16,7 @@ class LEAVEMEALONE_API ALMADamageActor : public AActor
 
 public:
 	ALMADamageActor();
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	USphereComponent* SphereComponent;
 

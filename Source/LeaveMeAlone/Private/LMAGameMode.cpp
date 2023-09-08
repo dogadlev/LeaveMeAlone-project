@@ -4,7 +4,7 @@
 #include "Player/LMADefaultCharacter.h"
 #include "Player/LMAPlayerController.h"
 
-ALMAGameMode::ALMAGameMode() 
+ALMAGameMode::ALMAGameMode()
 {
 	DefaultPawnClass = ALMADefaultCharacter::StaticClass();
 	PlayerControllerClass = ALMAPlayerController::StaticClass();

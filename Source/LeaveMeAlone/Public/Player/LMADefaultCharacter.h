@@ -11,7 +11,7 @@ class USpringArmComponent;
 class UInputComponent;
 class UDecalComponent;
 class UMaterialInterface;
-class ULMAHealthComponent;
+class ULMAHealthPoints;
 class UAnimMontage;
 
 UCLASS()
@@ -23,7 +23,10 @@ public:
 	ALMADefaultCharacter();
 
 	UFUNCTION()
-	ULMAHealthComponent* GetHealthComponent() { return HealthComponent; }
+	ULMAHealthPoints* GetHealthComponent() { return HealthComponent; }
+
+	UFUNCTION()
+	bool GetSprintState() { return IsSprinting; }
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -33,8 +36,8 @@ protected:
 	UCameraComponent* CameraComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Health")
-	ULMAHealthComponent* HealthComponent;
-
+	ULMAHealthPoints* HealthComponent;
+	
 	UPROPERTY()
 	UDecalComponent* CurrentCursor = nullptr;
 
@@ -52,6 +55,21 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	float MinArmLength = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	bool IsSprinting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float CurrentStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float MaxStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float StaminaDecreaseRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	float StaminaIncreaseRate;
 
 	virtual void BeginPlay() override;
 
@@ -73,4 +91,7 @@ private:
 	void OnHealthChanged(float);
 
 	void RotationPlayerOnCursor();
+
+	void StopSprint();
+	void StartSprint();
 };

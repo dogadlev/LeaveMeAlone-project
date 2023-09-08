@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/StaticMeshComponent.h"
+#include "Math/Vector.h"
 
 ALMADamageActor::ALMADamageActor()
 {
