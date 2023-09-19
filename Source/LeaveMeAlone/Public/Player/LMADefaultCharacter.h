@@ -13,6 +13,7 @@ class UDecalComponent;
 class UMaterialInterface;
 class ULMAHealthPoints;
 class UAnimMontage;
+class ULMAWeaponComponent;
 
 UCLASS()
 class LEAVEMEALONE_API ALMADefaultCharacter : public ACharacter
@@ -37,6 +38,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components|Health")
 	ULMAHealthPoints* HealthComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	ULMAWeaponComponent* WeaponComponent;
 	
 	UPROPERTY()
 	UDecalComponent* CurrentCursor = nullptr;

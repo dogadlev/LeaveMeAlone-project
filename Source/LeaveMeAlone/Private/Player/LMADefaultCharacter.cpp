@@ -5,6 +5,7 @@
 #include "Components/DecalComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/LMAWeaponComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -35,6 +36,7 @@ ALMADefaultCharacter::ALMADefaultCharacter()
 	CameraComponent->bUsePawnControlRotation = false;
 
 	HealthComponent = CreateDefaultSubobject<ULMAHealthPoints>("HealthComponent");
+	WeaponComponent = CreateDefaultSubobject<ULMAWeaponComponent>("Weapon");
 
 	IsSprinting = false;
 	CurrentStamina = 1.0f;
@@ -69,6 +71,7 @@ void ALMADefaultCharacter::Tick(float DeltaTime)
 	{
 		RotationPlayerOnCursor();
 	}
+	
 	if (IsSprinting)
 	{
 		if (FMath::IsNearlyEqual(CurrentStamina, 0.0f))
@@ -96,6 +99,11 @@ void ALMADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ALMADefaultCharacter::StartSprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ALMADefaultCharacter::StopSprint);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::StartFire);
+	PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &ULMAWeaponComponent::StopFire);
+
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &ULMAWeaponComponent::Reload);
 }
 
 void ALMADefaultCharacter::MoveForward(float value)
