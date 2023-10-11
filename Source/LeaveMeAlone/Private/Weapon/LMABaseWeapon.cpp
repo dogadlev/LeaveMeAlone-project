@@ -5,7 +5,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/TimerHandle.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogWeapon, All, All);
 
 ALMABaseWeapon::ALMABaseWeapon()
 {
@@ -67,7 +66,6 @@ void ALMABaseWeapon::DecrementBullets()
 		return;
 	}
 	CurrentAmmoWeapon.Bullets--;
-	UE_LOG(LogWeapon, Display, TEXT("Bullets = %s"), *FString::FromInt(CurrentAmmoWeapon.Bullets));
 }
 
 bool ALMABaseWeapon::IsCurrentClipEmpty() const

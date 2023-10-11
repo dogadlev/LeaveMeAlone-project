@@ -33,6 +33,16 @@ void ULMAWeaponComponent::Reload()
 	OnNotifyEmptyClip();
 }
 
+bool ULMAWeaponComponent::GetCurrentWeaponAmmo(FAmmoWeapon& AmmoWeapon) const
+{
+	if (Weapon)
+	{
+		AmmoWeapon = Weapon->GetCurrentAmmoWeapon();
+		return true;
+	}
+	return false;
+}
+
 void ULMAWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();
